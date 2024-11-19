@@ -24,5 +24,14 @@ public class UserService {
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+
+    public User authenticateUser(String username, String password) {
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isEmpty() || !passwordEncoder.matches(password, userOpt.get().getPassword())) {
+            throw new RuntimeException("Credenziali non valide!");
+        }
+        return userOpt.get();
+    }
+
 }
 
