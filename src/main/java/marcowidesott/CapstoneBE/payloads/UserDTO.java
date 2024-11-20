@@ -23,7 +23,9 @@ public record UserDTO(
 
         @NotEmpty(message = "Il cognome è obbligatorio.")
         @Size(min = 2, max = 30, message = "Il cognome deve contenere tra 2 e 30 caratteri.")
-        String lastName
+        String lastName,
+
+        String profileImageUrl
 ) {
 }
 

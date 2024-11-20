@@ -14,11 +14,21 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public User registerUser(User user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new RuntimeException("Username già in uso.");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
+    }
 
     public User authenticateUser(String username, String password) {
         Optional<User> userOpt = userRepository.findByUsername(username);
@@ -32,16 +42,6 @@ public class UserService {
         return user;
     }
 
-    public User registerUser(User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new RuntimeException("Username già in uso.");
-        }
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        return userRepository.save(user);
-    }
-
     public UserDTO updateUser(Long id, UserUpdateDTO userUpdateDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Utente non trovato con ID: " + id));
@@ -49,7 +49,7 @@ public class UserService {
         user.setFirstName(userUpdateDTO.firstName());
         user.setLastName(userUpdateDTO.lastName());
         user.setPassword(passwordEncoder.encode(userUpdateDTO.password()));
-        
+
         userRepository.save(user);
 
         return new UserDTO(
@@ -57,8 +57,16 @@ public class UserService {
                 null,
                 user.getEmail(),
                 user.getFirstName(),
-                user.getLastName()
+                user.getLastName(),
+                user.getProfileImageUrl()
         );
+    }
+
+    public void updateProfileImage(Long userId, String imageUrl) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Utente non trovato con ID: " + userId));
+        user.setProfileImageUrl(imageUrl);
+        userRepository.save(user);
     }
 }
 

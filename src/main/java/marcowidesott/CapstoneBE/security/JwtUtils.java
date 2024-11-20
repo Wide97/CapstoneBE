@@ -1,19 +1,25 @@
 package marcowidesott.CapstoneBE.security;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtils {
 
-    private final String jwtSecretBase64 = "c2VjcmV0a2V5dG9iZXVzZWRmb3JKV1RBdXRoZW50aWNhdGlvbg==";
-    private final SecretKey jwtSecret = Keys.hmacShaKeyFor(jwtSecretBase64.getBytes());
-    private final int jwtExpirationMs = 86400000;
+    private final Key jwtSecret;
+    private final long jwtExpirationMs;
+
+    public JwtUtils(@Value("${jwt.secret}") String secretKey, @Value("${jwt.expirationMs}") long jwtExpirationMs) {
+        this.jwtSecret = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.jwtExpirationMs = jwtExpirationMs;
+    }
 
     public String generateJwtToken(String username) {
         return Jwts.builder()
@@ -33,14 +39,14 @@ public class JwtUtils {
                 .getSubject();
     }
 
-    public boolean validateJwtToken(String token) {
+    public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(jwtSecret)
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
+        } catch (JwtException | IllegalArgumentException e) {
             System.out.println("Errore nella validazione del token: " + e.getMessage());
         }
         return false;
