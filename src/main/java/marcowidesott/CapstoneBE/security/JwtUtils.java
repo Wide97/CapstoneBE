@@ -11,7 +11,8 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    private final SecretKey jwtSecret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private final String jwtSecretBase64 = "c2VjcmV0a2V5dG9iZXVzZWRmb3JKV1RBdXRoZW50aWNhdGlvbg==";
+    private final SecretKey jwtSecret = Keys.hmacShaKeyFor(jwtSecretBase64.getBytes());
     private final int jwtExpirationMs = 86400000;
 
     public String generateJwtToken(String username) {
@@ -45,4 +46,5 @@ public class JwtUtils {
         return false;
     }
 }
+
 

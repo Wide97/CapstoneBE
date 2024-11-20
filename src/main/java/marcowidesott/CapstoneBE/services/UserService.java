@@ -3,6 +3,8 @@ package marcowidesott.CapstoneBE.services;
 import marcowidesott.CapstoneBE.entities.User;
 import marcowidesott.CapstoneBE.exceptions.InvalidCredentialsException;
 import marcowidesott.CapstoneBE.exceptions.UserNotFoundException;
+import marcowidesott.CapstoneBE.payloads.UserDTO;
+import marcowidesott.CapstoneBE.payloads.UserUpdateDTO;
 import marcowidesott.CapstoneBE.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,8 +38,27 @@ public class UserService {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        
+
         return userRepository.save(user);
+    }
+
+    public UserDTO updateUser(Long id, UserUpdateDTO userUpdateDTO) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("Utente non trovato con ID: " + id));
+
+        user.setFirstName(userUpdateDTO.firstName());
+        user.setLastName(userUpdateDTO.lastName());
+        user.setPassword(passwordEncoder.encode(userUpdateDTO.password()));
+        
+        userRepository.save(user);
+
+        return new UserDTO(
+                user.getUsername(),
+                null,
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName()
+        );
     }
 }
 
