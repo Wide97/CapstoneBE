@@ -31,9 +31,10 @@ public class User {
 
     @Column(nullable = false)
     private String lastName;
-    
+
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 }
+
 
 
