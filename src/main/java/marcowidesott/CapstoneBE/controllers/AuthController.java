@@ -11,6 +11,7 @@ import marcowidesott.CapstoneBE.security.JwtUtils;
 import marcowidesott.CapstoneBE.services.CloudinaryService;
 import marcowidesott.CapstoneBE.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
@@ -92,11 +93,12 @@ public class AuthController {
     @PostMapping("/{id}/uploadImage")
     public ResponseEntity<String> uploadProfileImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         try {
-            String imageUrl = cloudinaryService.uploadFile(file);
-            userService.updateProfileImage(id, imageUrl);
-            return ResponseEntity.ok("Immagine caricata con successo: " + imageUrl);
+            // Chiamata al servizio per caricare l'immagine
+            userService.uploadProfileImage(id, file);
+            return ResponseEntity.ok("Immagine caricata con successo.");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Errore durante il caricamento dell'immagine: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Errore nel caricamento dell'immagine: " + e.getMessage());
         }
     }
 

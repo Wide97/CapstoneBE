@@ -9,6 +9,7 @@ import marcowidesott.CapstoneBE.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -20,6 +21,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     public User registerUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
@@ -64,10 +68,20 @@ public class UserService {
     }
 
 
-    public void updateProfileImage(Long userId, String imageUrl) {
+    public void uploadProfileImage(Long userId, MultipartFile file) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Utente non trovato con ID: " + userId));
-        user.setProfileImageUrl(imageUrl);
-        userRepository.save(user);
+
+        try {
+            // Carica l'immagine nel cloud (Cloudinary ad esempio)
+            String imageUrl = cloudinaryService.uploadFile(file);
+
+            // Salva l'URL dell'immagine nel database
+            user.setProfileImageUrl(imageUrl);
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Errore nel caricamento dell'immagine: " + e.getMessage());
+        }
     }
 }
+
