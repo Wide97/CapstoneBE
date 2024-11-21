@@ -46,11 +46,12 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Utente non trovato con ID: " + id));
 
-        user.setFirstName(userUpdateDTO.firstName());
-        user.setLastName(userUpdateDTO.lastName());
-        user.setPassword(passwordEncoder.encode(userUpdateDTO.password()));
+
+        user.setUsername(userUpdateDTO.username());
+        user.setPassword(passwordEncoder.encode(userUpdateDTO.password()));  // Cripta la password
 
         userRepository.save(user);
+
 
         return new UserDTO(
                 user.getUsername(),
@@ -61,6 +62,7 @@ public class UserService {
                 user.getProfileImageUrl()
         );
     }
+
 
     public void updateProfileImage(Long userId, String imageUrl) {
         User user = userRepository.findById(userId)

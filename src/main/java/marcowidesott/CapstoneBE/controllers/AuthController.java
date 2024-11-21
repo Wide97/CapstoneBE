@@ -12,11 +12,13 @@ import marcowidesott.CapstoneBE.services.CloudinaryService;
 import marcowidesott.CapstoneBE.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -60,13 +62,31 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    private boolean hasPermissionToUpdate(Principal principal, Long userId) {
+        String loggedInUsername = principal.getName();
+
+        User loggedInUser = userRepository.findByUsername(loggedInUsername)
+                .orElseThrow(() -> new UserNotFoundException("Utente autenticato non trovato."));
+
+        return loggedInUser.getId().equals(userId);
+    }
+
+
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(
+    public ResponseEntity<String> updateUser(
             @PathVariable Long id,
-            @RequestBody @Valid UserUpdateDTO userUpdateDTO
+            @RequestBody @Valid UserUpdateDTO userUpdateDTO,
+            Principal principal
     ) {
+        if (!hasPermissionToUpdate(principal, id)) {
+            throw new AccessDeniedException("Non hai il permesso per modificare questo utente.");
+        }
+
         UserDTO updatedUser = userService.updateUser(id, userUpdateDTO);
-        return ResponseEntity.ok(updatedUser);
+
+        String newToken = jwtUtils.generateJwtToken(updatedUser.username());
+
+        return ResponseEntity.ok("Dati aggiornati con successo! Nuovo token: " + newToken);
     }
 
     @PostMapping("/{id}/uploadImage")
@@ -88,14 +108,15 @@ public class AuthController {
 
         UserDTO userDTO = new UserDTO(
                 user.getUsername(),
-                null,  // La password non viene restituita
+                null,
                 user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getProfileImageUrl()  // Aggiungi l'URL dell'immagine
+                user.getProfileImageUrl()
         );
 
         return ResponseEntity.ok(userDTO);
+
     }
 }
 
