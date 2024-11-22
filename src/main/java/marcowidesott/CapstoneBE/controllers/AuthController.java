@@ -116,6 +116,8 @@ public class AuthController {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Utente non trovato."));
 
+        System.out.println("User ID: " + user.getId());
+
         UserDTO userDTO = new UserDTO(
                 user.getUsername(),
                 null,
