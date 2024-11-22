@@ -27,9 +27,18 @@ public class CloudinaryService {
     }
 
     public String uploadFile(MultipartFile file) throws IOException {
-        Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
-        return (String) uploadResult.get("url");
+        // Verifica che il file non sia nullo
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("File non valido");
+        }
+
+        // Carica il file su Cloudinary e ottieni la risposta
+        Map<String, String> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("resource_type", "auto"));
+
+        // Restituisce l'URL sicuro dell'immagine
+        return uploadResult.get("secure_url");
     }
+
 
     public String uploadFileWithTransformation(MultipartFile file) throws IOException {
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(

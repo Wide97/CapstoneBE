@@ -11,7 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -46,13 +48,13 @@ public class UserService {
         return user;
     }
 
-    public UserDTO updateUser(Long id, UserUpdateDTO userUpdateDTO) {
+    public UserDTO updateUser(UUID id, UserUpdateDTO userUpdateDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Utente non trovato con ID: " + id));
 
 
         user.setUsername(userUpdateDTO.username());
-        user.setPassword(passwordEncoder.encode(userUpdateDTO.password()));  // Cripta la password
+        user.setPassword(passwordEncoder.encode(userUpdateDTO.password()));
 
         userRepository.save(user);
 
@@ -68,20 +70,18 @@ public class UserService {
     }
 
 
-    public void uploadProfileImage(Long userId, MultipartFile file) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Utente non trovato con ID: " + userId));
+    public void uploadProfileImage(UUID id, MultipartFile file) throws IOException {
 
-        try {
-            // Carica l'immagine nel cloud (Cloudinary ad esempio)
-            String imageUrl = cloudinaryService.uploadFile(file);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("Utente non trovato con ID: " + id));
 
-            // Salva l'URL dell'immagine nel database
-            user.setProfileImageUrl(imageUrl);
-            userRepository.save(user);
-        } catch (Exception e) {
-            throw new RuntimeException("Errore nel caricamento dell'immagine: " + e.getMessage());
-        }
+
+        String imageUrl = cloudinaryService.uploadFile(file);
+
+
+        user.setProfileImageUrl(imageUrl);
+        userRepository.save(user);
     }
+
 }
 

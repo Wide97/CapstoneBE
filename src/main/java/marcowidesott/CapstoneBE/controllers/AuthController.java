@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.util.UUID;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -53,9 +54,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@Valid @RequestBody UserLoginDTO loginRequest) {
         User user = userService.authenticateUser(loginRequest.username(), loginRequest.password());
+
         String jwtToken = jwtUtils.generateJwtToken(user.getUsername());
         return ResponseEntity.ok(jwtToken);
     }
+
 
     @GetMapping("/validateToken")
     public ResponseEntity<Void> validateToken(@RequestParam String token) {
@@ -63,7 +66,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    private boolean hasPermissionToUpdate(Principal principal, Long userId) {
+    private boolean hasPermissionToUpdate(Principal principal, UUID userId) {
         String loggedInUsername = principal.getName();
 
         User loggedInUser = userRepository.findByUsername(loggedInUsername)
@@ -75,25 +78,29 @@ public class AuthController {
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateUser(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestBody @Valid UserUpdateDTO userUpdateDTO,
             Principal principal
     ) {
+
         if (!hasPermissionToUpdate(principal, id)) {
             throw new AccessDeniedException("Non hai il permesso per modificare questo utente.");
         }
 
+
         UserDTO updatedUser = userService.updateUser(id, userUpdateDTO);
+
 
         String newToken = jwtUtils.generateJwtToken(updatedUser.username());
 
         return ResponseEntity.ok("Dati aggiornati con successo! Nuovo token: " + newToken);
     }
 
+
     @PostMapping("/{id}/uploadImage")
-    public ResponseEntity<String> uploadProfileImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadProfileImage(@PathVariable UUID id, @RequestParam("file") MultipartFile file) {
         try {
-            // Chiamata al servizio per caricare l'immagine
+
             userService.uploadProfileImage(id, file);
             return ResponseEntity.ok("Immagine caricata con successo.");
         } catch (Exception e) {
@@ -101,6 +108,7 @@ public class AuthController {
                     .body("Errore nel caricamento dell'immagine: " + e.getMessage());
         }
     }
+
 
     @GetMapping("/profile")
     public ResponseEntity<UserDTO> getUserProfile(Principal principal) {

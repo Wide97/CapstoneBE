@@ -30,6 +30,7 @@ public class JwtUtils {
                 .compact();
     }
 
+
     public String getUsernameFromJwtToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(jwtSecret)
