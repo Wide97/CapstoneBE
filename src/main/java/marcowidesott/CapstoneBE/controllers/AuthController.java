@@ -124,7 +124,8 @@ public class AuthController {
                 user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getProfileImageUrl()
+                user.getProfileImageUrl(),
+                user.getId()
         );
 
         return ResponseEntity.ok(userDTO);

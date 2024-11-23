@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
+import java.util.UUID;
+
 public record UserDTO(
         @NotEmpty(message = "Il nome utente è obbligatorio.")
         @Size(min = 3, max = 20, message = "Il nome utente deve contenere tra 3 e 20 caratteri.")
@@ -25,7 +27,9 @@ public record UserDTO(
         @Size(min = 2, max = 30, message = "Il cognome deve contenere tra 2 e 30 caratteri.")
         String lastName,
 
-        String profileImageUrl
+        String profileImageUrl,
+
+        UUID id
 ) {
 }
 
