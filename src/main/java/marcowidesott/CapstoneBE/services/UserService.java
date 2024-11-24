@@ -52,12 +52,11 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Utente non trovato con ID: " + id));
 
-
+        // Update username and password
         user.setUsername(userUpdateDTO.username());
         user.setPassword(passwordEncoder.encode(userUpdateDTO.password()));
 
         userRepository.save(user);
-
 
         return new UserDTO(
                 user.getUsername(),

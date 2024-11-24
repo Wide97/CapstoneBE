@@ -1,7 +1,6 @@
 package marcowidesott.CapstoneBE.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import marcowidesott.CapstoneBE.entities.User;
 import marcowidesott.CapstoneBE.exceptions.UserNotFoundException;
@@ -81,35 +80,25 @@ public class AuthController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateUser(
+    public ResponseEntity<Map<String, Object>> updateUser(
             @PathVariable UUID id,
             @RequestBody @Valid UserUpdateDTO userUpdateDTO,
-            Principal principal
-    ) throws JsonProcessingException {
+            Principal principal) throws JsonProcessingException {
 
         if (!hasPermissionToUpdate(principal, id)) {
             throw new AccessDeniedException("Non hai il permesso per modificare questo utente.");
         }
 
-
         UserDTO updatedUser = userService.updateUser(id, userUpdateDTO);
 
-
         String newToken = jwtUtils.generateJwtToken(updatedUser.username());
-
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Dati aggiornati con successo!");
         response.put("newToken", newToken);
         response.put("user", updatedUser);
 
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String responseBody = objectMapper.writeValueAsString(response);
-
-        return ResponseEntity.ok(responseBody);
-
-
+        return ResponseEntity.ok(response);
     }
 
 
