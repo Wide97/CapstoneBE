@@ -1,5 +1,7 @@
 package marcowidesott.CapstoneBE.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import marcowidesott.CapstoneBE.entities.User;
 import marcowidesott.CapstoneBE.exceptions.UserNotFoundException;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -81,7 +85,7 @@ public class AuthController {
             @PathVariable UUID id,
             @RequestBody @Valid UserUpdateDTO userUpdateDTO,
             Principal principal
-    ) {
+    ) throws JsonProcessingException {
 
         if (!hasPermissionToUpdate(principal, id)) {
             throw new AccessDeniedException("Non hai il permesso per modificare questo utente.");
@@ -93,7 +97,19 @@ public class AuthController {
 
         String newToken = jwtUtils.generateJwtToken(updatedUser.username());
 
-        return ResponseEntity.ok("Dati aggiornati con successo! Nuovo token: " + newToken);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Dati aggiornati con successo!");
+        response.put("newToken", newToken);
+        response.put("user", updatedUser);
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String responseBody = objectMapper.writeValueAsString(response);
+
+        return ResponseEntity.ok(responseBody);
+
+
     }
 
 
@@ -111,12 +127,14 @@ public class AuthController {
 
 
     @GetMapping("/profile")
-    public ResponseEntity<UserDTO> getUserProfile(Principal principal) {
+    public ResponseEntity<Map<String, Object>> getUserProfile(Principal principal) {
         String username = principal.getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Utente non trovato."));
 
-        System.out.println("User ID: " + user.getId());
+
+        String newToken = jwtUtils.generateJwtToken(user.getUsername());
+
 
         UserDTO userDTO = new UserDTO(
                 user.getUsername(),
@@ -128,9 +146,13 @@ public class AuthController {
                 user.getId()
         );
 
-        return ResponseEntity.ok(userDTO);
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", userDTO);
+        response.put("newToken", newToken);
 
+        return ResponseEntity.ok(response);
     }
+
 }
 
 
