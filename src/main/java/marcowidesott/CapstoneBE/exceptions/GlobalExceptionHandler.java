@@ -47,6 +47,10 @@ public class GlobalExceptionHandler {
         // Restituisce una risposta con status 400 Bad Request e il messaggio dell'eccezione
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
-    
+
+    @ExceptionHandler(TradeNotFoundException.class)
+    public ResponseEntity<String> handleNotFoundException(TradeNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }
 
