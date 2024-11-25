@@ -40,5 +40,13 @@ public class GlobalExceptionHandler {
         errorDetails.put("message", message);
         return new ResponseEntity<>(errorDetails, status);
     }
+
+    // Gestione dell'eccezione InvalidDateFormatException
+    @ExceptionHandler(InvalidDateFormatException.class)
+    public ResponseEntity<String> handleInvalidDateFormatException(InvalidDateFormatException ex) {
+        // Restituisce una risposta con status 400 Bad Request e il messaggio dell'eccezione
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    
 }
 

@@ -31,11 +31,14 @@ public class SecurityConfig {
         httpSecurity.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
         httpSecurity.sessionManagement(httpSecuritySessionManagementConfigurer ->
                 httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        // Permetti le richieste per gli endpoint API come /api/trades/create
         httpSecurity.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                authorizationManagerRequestMatcherRegistry.requestMatchers("/**").permitAll());
+                authorizationManagerRequestMatcherRegistry
+                        .requestMatchers("/api/**").permitAll());
         httpSecurity.cors(Customizer.withDefaults());
         return httpSecurity.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
