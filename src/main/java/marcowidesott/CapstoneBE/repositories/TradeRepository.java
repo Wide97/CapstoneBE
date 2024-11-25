@@ -12,5 +12,9 @@ public interface TradeRepository extends JpaRepository<Trade, UUID> {
 
     List<Trade> findByAsset(String asset); // Trova i trade per asset
 
-    List<Trade> findByResult(String result); // Trova i trade per risultato (profitto, stop loss, ecc.)
+    List<Trade> findByResult(String result);// Trova i trade per risultato (profitto, stop loss, ecc.)
+
+    void deleteById(UUID id);
+
+
 }

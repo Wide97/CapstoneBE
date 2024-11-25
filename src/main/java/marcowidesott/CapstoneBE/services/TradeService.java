@@ -4,12 +4,12 @@ import marcowidesott.CapstoneBE.entities.Trade;
 import marcowidesott.CapstoneBE.entities.User;
 import marcowidesott.CapstoneBE.exceptions.InvalidDateFormatException;
 import marcowidesott.CapstoneBE.exceptions.TradeNotFoundException;
+import marcowidesott.CapstoneBE.exceptions.UnauthorizedException;
 import marcowidesott.CapstoneBE.exceptions.UserNotFoundException;
 import marcowidesott.CapstoneBE.payloads.TradeDTO;
 import marcowidesott.CapstoneBE.repositories.TradeRepository;
 import marcowidesott.CapstoneBE.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,6 +17,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TradeService {
@@ -26,6 +27,7 @@ public class TradeService {
 
     @Autowired
     private UserRepository userRepository;
+
 
     public Trade createTrade(UUID userId, TradeDTO tradeDTO) {
 
@@ -97,22 +99,39 @@ public class TradeService {
         trade.setResult(tradeDTO.result());
         trade.setAsset(tradeDTO.asset());
 
-        // Salva il trade aggiornato
         return tradeRepository.save(trade);
     }
 
     // Ottieni tutti i trade per un dato utente
-    public List<Trade> getAllTradesForUser(UUID userId) {
-        return tradeRepository.findByUserId(userId);
+    public List<TradeDTO> getAllTradesByUserId(UUID userId) {
+        List<Trade> trades = tradeRepository.findByUserId(userId);
+
+        return trades.stream()
+                .map(trade -> new TradeDTO(
+                        trade.getPurchaseDate().toString(),
+                        trade.getSaleDate().toString(),
+                        trade.getPurchaseTime().toString(),
+                        trade.getSaleTime().toString(),
+                        trade.getPositionSize(),
+                        trade.getLeverage(),
+                        trade.getStrategy(),
+                        trade.getTradeType(),
+                        trade.getOpeningCosts(),
+                        trade.getClosingCosts(),
+                        trade.getResult(),
+                        trade.getAsset(),
+                        trade.getId()
+                ))
+                .collect(Collectors.toList());
     }
 
-    // Eliminazione di un trade
-    public void deleteTrade(UUID userId, UUID tradeId) {
+
+    public void deleteTrade(UUID tradeId, UUID userId) {
         Trade trade = tradeRepository.findById(tradeId)
                 .orElseThrow(() -> new TradeNotFoundException("Trade non trovato"));
 
         if (!trade.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("Non puoi eliminare questo trade.");
+            throw new UnauthorizedException("Non hai il permesso per eliminare questo trade.");
         }
 
         tradeRepository.delete(trade);

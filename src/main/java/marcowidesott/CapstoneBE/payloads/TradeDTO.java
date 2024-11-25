@@ -51,6 +51,8 @@ public record TradeDTO(
         Asset asset,  // Asset selezionato come EUR/USD, BTC/USD, ecc.
 
         UUID userId
+
+
 ) {
 }
 

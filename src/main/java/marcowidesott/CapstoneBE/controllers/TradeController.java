@@ -50,25 +50,23 @@ public class TradeController {
     }
 
     // 3. Visualizzazione della lista di tutti i trade dell'utente
-    @GetMapping("/")
-    public ResponseEntity<List<Trade>> getAllTrades(Principal principal) {
-        String username = principal.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("Utente non trovato"));
-
-        List<Trade> trades = tradeService.getAllTradesForUser(user.getId());
+    @GetMapping("/user/{userId}/trades")
+    public ResponseEntity<List<TradeDTO>> getAllTradesByUserId(@PathVariable UUID userId) {
+        List<TradeDTO> trades = tradeService.getAllTradesByUserId(userId);
         return ResponseEntity.ok(trades);
     }
 
     // 4. Eliminazione di un trade
-    @DeleteMapping("/{tradeId}")
-    public ResponseEntity<String> deleteTrade(@PathVariable UUID tradeId, Principal principal) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTrade(@PathVariable UUID id, Principal principal) {
         String username = principal.getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Utente non trovato"));
 
-        tradeService.deleteTrade(user.getId(), tradeId);
+        tradeService.deleteTrade(id, user.getId());
+
         return ResponseEntity.ok("Trade eliminato con successo.");
     }
+
 }
 
