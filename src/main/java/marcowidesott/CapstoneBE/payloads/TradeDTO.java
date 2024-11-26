@@ -7,6 +7,7 @@ import marcowidesott.CapstoneBE.entities.Asset;
 import marcowidesott.CapstoneBE.entities.PositionType;
 import marcowidesott.CapstoneBE.entities.TradeResult;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public record TradeDTO(
@@ -48,7 +49,7 @@ public record TradeDTO(
         TradeResult result,  // PROFIT, STOP LOSS, o BREAK EVEN
 
         @NotNull(message = "L'ammontare del profitto/perdita è obbligatorio.")
-        Double profitLoss,
+        BigDecimal profitLoss,
 
         @NotNull(message = "L'asset è obbligatorio.")
         Asset asset,  // Asset selezionato come EUR/USD, BTC/USD, ecc.
