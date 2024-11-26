@@ -69,6 +69,7 @@ public class TradeService {
         trade.setOpeningCosts(tradeDTO.openingCosts());
         trade.setClosingCosts(tradeDTO.closingCosts());
         trade.setResult(tradeDTO.result());
+        trade.setProfitLoss(tradeDTO.profitLoss());
         trade.setAsset(tradeDTO.asset());
 
         trade.setUser(user);
@@ -97,6 +98,7 @@ public class TradeService {
         trade.setOpeningCosts(tradeDTO.openingCosts());
         trade.setClosingCosts(tradeDTO.closingCosts());
         trade.setResult(tradeDTO.result());
+        trade.setProfitLoss(tradeDTO.profitLoss());
         trade.setAsset(tradeDTO.asset());
 
         return tradeRepository.save(trade);
@@ -119,6 +121,7 @@ public class TradeService {
                         trade.getOpeningCosts(),
                         trade.getClosingCosts(),
                         trade.getResult(),
+                        trade.getProfitLoss(),
                         trade.getAsset(),
                         trade.getId()
                 ))

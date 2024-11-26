@@ -39,6 +39,8 @@ public class Trade {
 
     @Enumerated(EnumType.STRING)
     private TradeResult result;  // Esito del trade (Profitto, Perdita, Break Even)
+    
+    private Double profitLoss;
 
     @Enumerated(EnumType.STRING)
     private Asset asset;

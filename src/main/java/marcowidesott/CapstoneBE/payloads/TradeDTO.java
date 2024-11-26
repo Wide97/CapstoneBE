@@ -47,6 +47,9 @@ public record TradeDTO(
         @NotNull(message = "L'esito del trade è obbligatorio.")
         TradeResult result,  // PROFIT, STOP LOSS, o BREAK EVEN
 
+        @NotNull(message = "L'ammontare del profitto/perdita è obbligatorio.")
+        Double profitLoss,
+
         @NotNull(message = "L'asset è obbligatorio.")
         Asset asset,  // Asset selezionato come EUR/USD, BTC/USD, ecc.
 
