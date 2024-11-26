@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -27,15 +29,19 @@ public class TradeController {
     private UserRepository userRepository;
 
     @PostMapping("/createTrade")
-    public ResponseEntity<String> createTrade(@RequestBody @Valid TradeDTO tradeDTO, Principal principal) {
+    public ResponseEntity<Map<String, Object>> createTrade(@RequestBody @Valid TradeDTO tradeDTO, Principal principal) {
         String username = principal.getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Utente non trovato"));
 
         Trade newTrade = tradeService.createTrade(user.getId(), tradeDTO);
-
-        return ResponseEntity.ok("Trade creato con successo: " + newTrade.getId());
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Trade creato con successo");
+        response.put("tradeId", newTrade.getId());
+        return ResponseEntity.ok(response);
     }
+
 
     // 2. Modifica di un trade
     @PutMapping("/{id}")
