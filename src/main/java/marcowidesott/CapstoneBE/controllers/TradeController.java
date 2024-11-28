@@ -8,6 +8,7 @@ import marcowidesott.CapstoneBE.payloads.TradeDTO;
 import marcowidesott.CapstoneBE.repositories.UserRepository;
 import marcowidesott.CapstoneBE.services.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,16 +66,22 @@ public class TradeController {
 
     // 4. Eliminazione di un trade
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTrade(@PathVariable UUID id, Principal principal) {
-        System.out.println("ID del trade da eliminare: " + id); // Verifica che l'ID sia valido
-        String username = principal.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("Utente non trovato"));
+    public ResponseEntity<Map<String, String>> deleteTrade(@PathVariable UUID id, Principal principal) {
+        try {
+            String username = principal.getName();
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new UserNotFoundException("Utente non trovato"));
 
-        tradeService.deleteTrade(id, user.getId());
+            tradeService.deleteTrade(id, user.getId());
 
-        return ResponseEntity.ok("Trade eliminato con successo.");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Trade eliminato con successo");
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "ID trade non valido"));
+        }
     }
+
 
 }
 

@@ -54,7 +54,7 @@ public record TradeDTO(
         @NotNull(message = "L'asset è obbligatorio.")
         Asset asset,  // Asset selezionato come EUR/USD, BTC/USD, ecc.
 
-        UUID tradeid
+        UUID tradeId
 
 
 ) {
