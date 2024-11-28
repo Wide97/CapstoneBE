@@ -83,13 +83,11 @@ public class TradeService {
         Trade trade = tradeRepository.findById(tradeId)
                 .orElseThrow(() -> new TradeNotFoundException("Trade non trovato"));
 
-        // Aggiorna i campi con i nuovi valori dal DTO
         try {
             trade.setPurchaseDate(LocalDate.parse(tradeDTO.purchaseDate()));
         } catch (DateTimeParseException e) {
             throw new InvalidDateFormatException("Formato data di acquisto non valido");
         }
-        // ...aggiorna altri campi come le date e orari
 
         trade.setPositionSize(tradeDTO.positionSize());
         trade.setLeverage(String.valueOf(tradeDTO.leverage()));

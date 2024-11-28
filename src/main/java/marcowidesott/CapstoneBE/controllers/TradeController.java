@@ -35,7 +35,7 @@ public class TradeController {
                 .orElseThrow(() -> new UserNotFoundException("Utente non trovato"));
 
         Trade newTrade = tradeService.createTrade(user.getId(), tradeDTO);
-        
+
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Trade creato con successo");
         response.put("tradeId", newTrade.getId());
@@ -60,11 +60,13 @@ public class TradeController {
     public ResponseEntity<List<TradeDTO>> getAllTradesByUserId(@PathVariable UUID userId) {
         List<TradeDTO> trades = tradeService.getAllTradesByUserId(userId);
         return ResponseEntity.ok(trades);
+
     }
 
     // 4. Eliminazione di un trade
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTrade(@PathVariable UUID id, Principal principal) {
+        System.out.println("ID del trade da eliminare: " + id); // Verifica che l'ID sia valido
         String username = principal.getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Utente non trovato"));
