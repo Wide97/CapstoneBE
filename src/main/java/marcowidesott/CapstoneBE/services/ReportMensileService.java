@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,11 +30,15 @@ public class ReportMensileService {
         BigDecimal profitto = BigDecimal.ZERO;
         BigDecimal perdita = BigDecimal.ZERO;
 
+        // Ottieni il mese e l'anno precedenti
+        LocalDate oggi = LocalDate.now();
+        LocalDate inizioMesePrecedente = oggi.withDayOfMonth(1).minusMonths(1);
+        LocalDate fineMesePrecedente = oggi.withDayOfMonth(1).minusDays(1);
+
         // Calcola profitto e perdita totale del mese precedente
         List<Trade> trades = capitale.getUser().getTrades();
-        Month mesePrecedente = LocalDate.now().minusMonths(1).getMonth();
         for (Trade trade : trades) {
-            if (trade.getSaleDate().getMonth() == mesePrecedente) {
+            if (!trade.getSaleDate().isBefore(inizioMesePrecedente) && !trade.getSaleDate().isAfter(fineMesePrecedente)) {
                 if (trade.getProfitLoss().compareTo(BigDecimal.ZERO) > 0) {
                     profitto = profitto.add(trade.getProfitLoss());
                 } else {
@@ -46,7 +49,7 @@ public class ReportMensileService {
 
         // Crea e salva il report mensile
         ReportMensile reportMensile = ReportMensile.builder()
-                .mese(mesePrecedente)
+                .mese(inizioMesePrecedente.getMonth())  // Mese precedente
                 .profitto(profitto)
                 .perdita(perdita)
                 .capitaleFinale(capitale.getCapitaleAttuale())
@@ -54,10 +57,9 @@ public class ReportMensileService {
                 .build();
         reportMensileRepository.save(reportMensile);
 
-        // Azzera profitto e perdita
-        capitale.setCapitaleAttuale(capitale.getCapitaleAttuale());
-        capitaleRepository.save(capitale); // Aggiornamento senza aggiunta di nuovo trade
+        // Non è necessario azzerare il capitale in questo contesto
     }
+
 
     public List<ReportMensile> getReportMensiliByUserId(UUID userId) {
         return reportMensileRepository.findByUserId(userId);
