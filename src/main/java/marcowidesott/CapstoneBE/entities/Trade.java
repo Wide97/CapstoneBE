@@ -54,10 +54,6 @@ public class Trade {
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "valuta_id")
-    private Valuta valuta;
-
+    
 
 }

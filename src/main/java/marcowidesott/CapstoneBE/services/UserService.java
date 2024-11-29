@@ -1,6 +1,8 @@
 package marcowidesott.CapstoneBE.services;
 
+import jakarta.transaction.Transactional;
 import marcowidesott.CapstoneBE.entities.User;
+import marcowidesott.CapstoneBE.entities.Valuta;
 import marcowidesott.CapstoneBE.exceptions.InvalidCredentialsException;
 import marcowidesott.CapstoneBE.exceptions.UserNotFoundException;
 import marcowidesott.CapstoneBE.payloads.UserDTO;
@@ -81,6 +83,14 @@ public class UserService {
 
         user.setProfileImageUrl(imageUrl);
         userRepository.save(user);
+    }
+
+    @Transactional
+    public User aggiornaValutaPreferita(UUID userId, Valuta nuovaValuta) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato con ID: " + userId));
+        user.setValuta(nuovaValuta);
+        return userRepository.save(user);
     }
 
 }
