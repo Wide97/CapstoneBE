@@ -1,5 +1,8 @@
 package marcowidesott.CapstoneBE.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Trade {
 
     @Id
@@ -27,19 +31,19 @@ public class Trade {
     private LocalDate saleDate;
     private LocalTime purchaseTime;
     private LocalTime saleTime;
-    private double positionSize; // Lottaggio della posizione
-    private String leverage; // Leva, esempio: "1:30", "1:100", etc.
-    private String strategy; // Strategia utilizzata dall'utente
+    private double positionSize;
+    private String leverage;
+    private String strategy;
     @Enumerated(EnumType.STRING)
-    private PositionType tradeType;  // LONG o SHORT
+    private PositionType tradeType;
 
 
-    private double openingCosts; // Costi di apertura
-    private double closingCosts; // Costi di chiusura
+    private double openingCosts;
+    private double closingCosts;
 
 
     @Enumerated(EnumType.STRING)
-    private TradeResult result;  // Esito del trade (Profitto, Perdita, Break Even)
+    private TradeResult result;
 
     private BigDecimal profitLoss;
 
@@ -48,6 +52,7 @@ public class Trade {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @ManyToOne

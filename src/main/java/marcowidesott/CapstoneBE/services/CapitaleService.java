@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import marcowidesott.CapstoneBE.entities.Capitale;
 import marcowidesott.CapstoneBE.entities.Trade;
 import marcowidesott.CapstoneBE.repositories.CapitaleRepository;
+import marcowidesott.CapstoneBE.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import java.util.UUID;
 public class CapitaleService {
 
     private final CapitaleRepository capitaleRepository;
+    private final UserRepository userRepository;
 
     public Capitale getCapitaleByUserId(UUID userId) {
         return capitaleRepository.findByUserId(userId)
@@ -31,5 +33,20 @@ public class CapitaleService {
         capitale.setCapitaleAttuale(nuovoCapitaleAttuale);
 
         return capitaleRepository.save(capitale);
+    }
+
+    @Transactional
+    public void setCapitaleIniziale(UUID userId, BigDecimal capitaleIniziale) {
+        Capitale capitale = capitaleRepository.findByUserId(userId)
+                .orElseGet(() -> {
+                    Capitale newCapitale = new Capitale();
+                    newCapitale.setUser(userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Utente non trovato con ID: " + userId)));
+                    return newCapitale;
+                });
+
+        capitale.setCapitaleIniziale(capitaleIniziale);
+        capitale.setCapitaleAttuale(capitaleIniziale);  // Impostiamo anche il capitale attuale al capitale iniziale
+
+        capitaleRepository.save(capitale);
     }
 }
