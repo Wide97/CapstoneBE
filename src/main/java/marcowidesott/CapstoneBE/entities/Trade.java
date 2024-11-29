@@ -50,4 +50,9 @@ public class Trade {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "valuta_id")
+    private Valuta valuta;
+
+
 }

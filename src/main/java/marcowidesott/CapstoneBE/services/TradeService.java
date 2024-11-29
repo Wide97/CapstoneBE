@@ -1,6 +1,7 @@
 package marcowidesott.CapstoneBE.services;
 
 import marcowidesott.CapstoneBE.entities.Trade;
+import marcowidesott.CapstoneBE.entities.TradeResult;
 import marcowidesott.CapstoneBE.entities.User;
 import marcowidesott.CapstoneBE.exceptions.InvalidDateFormatException;
 import marcowidesott.CapstoneBE.exceptions.TradeNotFoundException;
@@ -12,6 +13,7 @@ import marcowidesott.CapstoneBE.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
@@ -72,10 +74,18 @@ public class TradeService {
         trade.setProfitLoss(tradeDTO.profitLoss());
         trade.setAsset(tradeDTO.asset());
 
+        BigDecimal profitLoss = tradeDTO.profitLoss();
+        if (TradeResult.STOP_LOSS.equals(tradeDTO.result())) {
+            profitLoss = profitLoss.abs().negate();
+        }
+        trade.setProfitLoss(profitLoss);
+
+        trade.setAsset(tradeDTO.asset());
         trade.setUser(user);
 
         return tradeRepository.save(trade);
     }
+    
 
     // Modifica di un trade
     public Trade updateTrade(UUID tradeId, TradeDTO tradeDTO) {
