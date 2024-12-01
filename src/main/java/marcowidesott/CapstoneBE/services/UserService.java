@@ -93,5 +93,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
+    public Valuta getValutaPreferita(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato con ID: " + userId));
+        return user.getValuta();
+    }
+
 }
 

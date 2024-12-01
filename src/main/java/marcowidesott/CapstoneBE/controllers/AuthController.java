@@ -149,6 +149,12 @@ public class AuthController {
         return ResponseEntity.ok(utenteAggiornato);
     }
 
+    @GetMapping("/valuta/{userId}")
+    public ResponseEntity<Valuta> getValutaPreferita(@PathVariable UUID userId) {
+        Valuta valuta = userService.getValutaPreferita(userId);
+        return ResponseEntity.ok(valuta);
+    }
+
 
 }
 
