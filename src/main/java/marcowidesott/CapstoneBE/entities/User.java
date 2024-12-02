@@ -48,9 +48,13 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Capitale capitale;
-    
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ReportMensile> reportMensili;
+
+    @ManyToOne
+    @JoinColumn(name = "valuta_id")
+    private Valuta valuta;
 
 }
 

@@ -3,6 +3,7 @@ package marcowidesott.CapstoneBE.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import marcowidesott.CapstoneBE.entities.User;
+import marcowidesott.CapstoneBE.entities.Valuta;
 import marcowidesott.CapstoneBE.exceptions.UserNotFoundException;
 import marcowidesott.CapstoneBE.payloads.UserDTO;
 import marcowidesott.CapstoneBE.payloads.UserLoginDTO;
@@ -132,7 +133,8 @@ public class AuthController {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getProfileImageUrl(),
-                user.getId()
+                user.getId(),
+                user.getValuta()
         );
 
         Map<String, Object> response = new HashMap<>();
@@ -141,7 +143,15 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
-    
+
+
+    @GetMapping("/utente/{userId}/valuta")
+    public ResponseEntity<Valuta> getValutaPreferita(@PathVariable UUID userId) {
+        User user = userService.getUserById(userId);
+        Valuta valutaPreferita = user.getValuta();
+        return ResponseEntity.ok(valutaPreferita);
+    }
+
 
 }
 

@@ -3,6 +3,7 @@ package marcowidesott.CapstoneBE.payloads;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import marcowidesott.CapstoneBE.entities.Valuta;
 
 import java.util.UUID;
 
@@ -29,7 +30,9 @@ public record UserDTO(
 
         String profileImageUrl,
 
-        UUID id
+        UUID id,
+
+        Valuta valuta
 ) {
 }
 

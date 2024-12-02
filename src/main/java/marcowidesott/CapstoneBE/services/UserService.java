@@ -65,7 +65,8 @@ public class UserService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getProfileImageUrl(),
-                user.getId()
+                user.getId(),
+                user.getValuta()
         );
     }
 
@@ -82,6 +83,13 @@ public class UserService {
         user.setProfileImageUrl(imageUrl);
         userRepository.save(user);
     }
+
+
+    public User getUserById(UUID userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Utente non trovato con ID: " + userId));
+    }
+
 
 }
 

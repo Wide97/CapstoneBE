@@ -52,5 +52,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleNotFoundException(TradeNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ValutaNotFoundException.class)
+    public ResponseEntity<String> handleValutaNotFound(ValutaNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }
 
