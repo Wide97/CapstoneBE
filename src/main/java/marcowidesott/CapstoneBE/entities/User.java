@@ -48,10 +48,7 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Capitale capitale;
-
-    @Enumerated(EnumType.STRING)
-    private Valuta valuta;
-
+    
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ReportMensile> reportMensili;
 

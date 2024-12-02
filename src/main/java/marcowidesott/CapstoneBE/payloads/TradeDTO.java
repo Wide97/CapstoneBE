@@ -46,13 +46,13 @@ public record TradeDTO(
         Double closingCosts,
 
         @NotNull(message = "L'esito del trade è obbligatorio.")
-        TradeResult result,  // PROFIT, STOP LOSS, o BREAK EVEN
+        TradeResult result,
 
         @NotNull(message = "L'ammontare del profitto/perdita è obbligatorio.")
         BigDecimal profitLoss,
 
         @NotNull(message = "L'asset è obbligatorio.")
-        Asset asset,  // Asset selezionato come EUR/USD, BTC/USD, ecc.
+        Asset asset,
 
         UUID tradeId
 
