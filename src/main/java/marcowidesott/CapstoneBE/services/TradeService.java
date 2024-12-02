@@ -85,7 +85,7 @@ public class TradeService {
 
         return tradeRepository.save(trade);
     }
-    
+
 
     // Modifica di un trade
     public Trade updateTrade(UUID tradeId, TradeDTO tradeDTO) {
@@ -148,5 +148,8 @@ public class TradeService {
         tradeRepository.delete(trade);
     }
 }
+
+
+
 
 

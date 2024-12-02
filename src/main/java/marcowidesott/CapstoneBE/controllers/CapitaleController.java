@@ -2,13 +2,11 @@ package marcowidesott.CapstoneBE.controllers;
 
 import lombok.RequiredArgsConstructor;
 import marcowidesott.CapstoneBE.entities.Capitale;
-import marcowidesott.CapstoneBE.entities.Trade;
 import marcowidesott.CapstoneBE.payloads.CapitaleDTO;
 import marcowidesott.CapstoneBE.services.CapitaleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @RestController
@@ -18,22 +16,33 @@ public class CapitaleController {
 
     private final CapitaleService capitaleService;
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<CapitaleDTO> getCapitaleByUserId(@PathVariable UUID userId) {
+    // Endpoint per ottenere il capitale attuale di un utente
+    @GetMapping("/utente/{userId}")
+    public ResponseEntity<Capitale> getCapitaleByUserId(@PathVariable UUID userId) {
         Capitale capitale = capitaleService.getCapitaleByUserId(userId);
-        CapitaleDTO capitaleDTO = new CapitaleDTO(capitale.getCapitaleIniziale(), capitale.getCapitaleAttuale(), userId);
-        return ResponseEntity.ok(capitaleDTO);
+        return ResponseEntity.ok(capitale);
     }
 
-    @PostMapping("/iniziale/{userId}")
-    public ResponseEntity<String> setCapitaleIniziale(@PathVariable UUID userId, @RequestBody BigDecimal capitaleIniziale) {
-        capitaleService.setCapitaleIniziale(userId, capitaleIniziale);
+    // Endpoint per impostare il capitale iniziale di un utente
+    @PostMapping("/utente/{userId}/iniziale")
+    public ResponseEntity<String> setCapitaleIniziale(@PathVariable UUID userId, @RequestBody CapitaleDTO capitaleDTO) {
+        capitaleService.setCapitaleIniziale(userId, capitaleDTO.capitaleIniziale());
         return ResponseEntity.ok("Capitale iniziale impostato con successo.");
     }
 
-    @PutMapping("/aggiorna")
-    public ResponseEntity<Capitale> aggiornaCapitale(@RequestBody Trade trade) {
-        Capitale capitaleAggiornato = capitaleService.aggiornaCapitale(trade);
+    // Endpoint per ricalcolare il capitale attuale di un utente (in base ai trade esistenti)
+    @PutMapping("/utente/{userId}/ricalcola")
+    public ResponseEntity<Capitale> ricalcolaCapitale(@PathVariable UUID userId) {
+        Capitale capitaleRicalcolato = capitaleService.ricalcolaCapitale(userId);
+        return ResponseEntity.ok(capitaleRicalcolato);
+    }
+
+    // Endpoint per aggiornare manualmente il capitale attuale di un utente
+    @PutMapping("/utente/{userId}/aggiorna")
+    public ResponseEntity<Capitale> aggiornaCapitale(@PathVariable UUID userId, @RequestBody CapitaleDTO capitaleDTO) {
+        Capitale capitaleAggiornato = capitaleService.aggiornaCapitaleManuale(userId, capitaleDTO.capitaleIniziale());
         return ResponseEntity.ok(capitaleAggiornato);
     }
 }
+
+

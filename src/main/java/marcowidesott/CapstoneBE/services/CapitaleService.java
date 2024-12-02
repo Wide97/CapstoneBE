@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import marcowidesott.CapstoneBE.entities.Capitale;
 import marcowidesott.CapstoneBE.entities.Trade;
 import marcowidesott.CapstoneBE.repositories.CapitaleRepository;
+import marcowidesott.CapstoneBE.repositories.TradeRepository;
 import marcowidesott.CapstoneBE.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -17,6 +19,7 @@ public class CapitaleService {
 
     private final CapitaleRepository capitaleRepository;
     private final UserRepository userRepository;
+    private final TradeRepository tradeRepository;
 
     public Capitale getCapitaleByUserId(UUID userId) {
         return capitaleRepository.findByUserId(userId)
@@ -24,14 +27,9 @@ public class CapitaleService {
     }
 
     @Transactional
-    public Capitale aggiornaCapitale(Trade trade) {
-        Capitale capitale = getCapitaleByUserId(trade.getUser().getId());
-        BigDecimal profitLoss = trade.getProfitLoss();
-
-        // Aggiorna il capitale attuale con il risultato del trade
-        BigDecimal nuovoCapitaleAttuale = capitale.getCapitaleAttuale().add(profitLoss);
-        capitale.setCapitaleAttuale(nuovoCapitaleAttuale);
-
+    public Capitale aggiornaCapitaleManuale(UUID userId, BigDecimal nuovoCapitale) {
+        Capitale capitale = getCapitaleByUserId(userId);
+        capitale.setCapitaleAttuale(nuovoCapitale);
         return capitaleRepository.save(capitale);
     }
 
@@ -49,4 +47,24 @@ public class CapitaleService {
 
         capitaleRepository.save(capitale);
     }
+
+    @Transactional
+    public Capitale ricalcolaCapitale(UUID userId) {
+        Capitale capitale = getCapitaleByUserId(userId);
+
+        // Recuperiamo tutti i trade dell'utente
+        List<Trade> trades = tradeRepository.findByUserId(userId);
+
+        // Sommiamo tutti i profitti/perdite dei trade
+        BigDecimal totaleProfitLoss = trades.stream()
+                .map(Trade::getProfitLoss)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Calcoliamo il nuovo capitale attuale
+        BigDecimal nuovoCapitaleAttuale = capitale.getCapitaleIniziale().add(totaleProfitLoss);
+        capitale.setCapitaleAttuale(nuovoCapitaleAttuale);
+
+        return capitaleRepository.save(capitale);
+    }
 }
+
