@@ -7,6 +7,9 @@ import marcowidesott.CapstoneBE.services.CapitaleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -25,10 +28,13 @@ public class CapitaleController {
 
     // Endpoint per impostare il capitale iniziale di un utente
     @PostMapping("/utente/{userId}/iniziale")
-    public ResponseEntity<String> setCapitaleIniziale(@PathVariable UUID userId, @RequestBody CapitaleDTO capitaleDTO) {
+    public ResponseEntity<Map<String, String>> setCapitaleIniziale(@PathVariable UUID userId, @RequestBody CapitaleDTO capitaleDTO) {
         capitaleService.setCapitaleIniziale(userId, capitaleDTO.capitaleIniziale());
-        return ResponseEntity.ok("Capitale iniziale impostato con successo.");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Capitale iniziale impostato con successo.");
+        return ResponseEntity.ok(response);
     }
+
 
     // Endpoint per ricalcolare il capitale attuale di un utente (in base ai trade esistenti)
     @PutMapping("/utente/{userId}/ricalcola")
@@ -37,12 +43,22 @@ public class CapitaleController {
         return ResponseEntity.ok(capitaleRicalcolato);
     }
 
-    // Endpoint per aggiornare manualmente il capitale attuale di un utente
-    @PutMapping("/utente/{userId}/aggiorna")
-    public ResponseEntity<Capitale> aggiornaCapitale(@PathVariable UUID userId, @RequestBody CapitaleDTO capitaleDTO) {
-        Capitale capitaleAggiornato = capitaleService.aggiornaCapitaleManuale(userId, capitaleDTO.capitaleIniziale());
-        return ResponseEntity.ok(capitaleAggiornato);
+    @GetMapping("/utente/{userId}/attuale")
+    public ResponseEntity<BigDecimal> getCapitaleAttualeByUserId(@PathVariable UUID userId) {
+        BigDecimal capitaleAttuale = capitaleService.getCapitaleAttualeByUserId(userId);
+        if (capitaleAttuale == null) {
+            throw new RuntimeException("Capitale attuale non trovato per l'utente con ID: " + userId);
+        }
+        return ResponseEntity.ok(capitaleAttuale);
     }
+
+    @GetMapping("/utente/{userId}/iniziale")
+    public ResponseEntity<String> getCapitaleInizialeByUserId(@PathVariable UUID userId) {
+        BigDecimal capitaleIniziale = capitaleService.getCapitaleInizialeByUserId(userId);
+        return ResponseEntity.ok(capitaleIniziale.toString());
+    }
+
+
 }
 
 

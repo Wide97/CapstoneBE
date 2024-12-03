@@ -1,5 +1,6 @@
 package marcowidesott.CapstoneBE.services;
 
+import marcowidesott.CapstoneBE.entities.Capitale;
 import marcowidesott.CapstoneBE.entities.Trade;
 import marcowidesott.CapstoneBE.entities.TradeResult;
 import marcowidesott.CapstoneBE.entities.User;
@@ -8,6 +9,7 @@ import marcowidesott.CapstoneBE.exceptions.TradeNotFoundException;
 import marcowidesott.CapstoneBE.exceptions.UnauthorizedException;
 import marcowidesott.CapstoneBE.exceptions.UserNotFoundException;
 import marcowidesott.CapstoneBE.payloads.TradeDTO;
+import marcowidesott.CapstoneBE.repositories.CapitaleRepository;
 import marcowidesott.CapstoneBE.repositories.TradeRepository;
 import marcowidesott.CapstoneBE.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class TradeService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CapitaleRepository capitaleRepository;
 
 
     public Trade createTrade(UUID userId, TradeDTO tradeDTO) {
@@ -138,15 +143,30 @@ public class TradeService {
 
 
     public void deleteTrade(UUID tradeId, UUID userId) {
+        // Trova il trade da eliminare
         Trade trade = tradeRepository.findById(tradeId)
                 .orElseThrow(() -> new TradeNotFoundException("Trade non trovato"));
 
+        // Verifica se l'utente ha il permesso di eliminare il trade
         if (!trade.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("Non hai il permesso per eliminare questo trade.");
         }
 
+        // Recupera il capitale dell'utente
+        Capitale capitale = capitaleRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Capitale non trovato per l'utente con ID: " + userId));
+
+        // Sottrai il profitto/perdita del trade dal capitale attuale
+        BigDecimal nuovoCapitaleAttuale = capitale.getCapitaleAttuale().subtract(trade.getProfitLoss());
+        capitale.setCapitaleAttuale(nuovoCapitaleAttuale);
+
+        // Salva il capitale aggiornato
+        capitaleRepository.save(capitale);
+
+        // Elimina il trade
         tradeRepository.delete(trade);
     }
+
 }
 
 

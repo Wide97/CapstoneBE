@@ -72,6 +72,7 @@ public class TradeController {
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new UserNotFoundException("Utente non trovato"));
 
+            // Chiama il servizio per eliminare il trade e aggiornare il capitale
             tradeService.deleteTrade(id, user.getId());
 
             Map<String, String> response = new HashMap<>();

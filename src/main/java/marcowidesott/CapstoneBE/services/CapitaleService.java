@@ -22,16 +22,15 @@ public class CapitaleService {
     private final TradeRepository tradeRepository;
 
     public Capitale getCapitaleByUserId(UUID userId) {
-        return capitaleRepository.findByUserId(userId)
+        Capitale capitale = capitaleRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Capitale non trovato per l'utente con ID: " + userId));
+
+        if (capitale.getCapitaleAttuale() == null) {
+            throw new RuntimeException("Capitale attuale non disponibile per l'utente: " + userId);
+        }
+        return capitale;
     }
 
-    @Transactional
-    public Capitale aggiornaCapitaleManuale(UUID userId, BigDecimal nuovoCapitale) {
-        Capitale capitale = getCapitaleByUserId(userId);
-        capitale.setCapitaleAttuale(nuovoCapitale);
-        return capitaleRepository.save(capitale);
-    }
 
     @Transactional
     public void setCapitaleIniziale(UUID userId, BigDecimal capitaleIniziale) {
@@ -43,7 +42,7 @@ public class CapitaleService {
                 });
 
         capitale.setCapitaleIniziale(capitaleIniziale);
-        capitale.setCapitaleAttuale(capitaleIniziale);  // Impostiamo anche il capitale attuale al capitale iniziale
+        capitale.setCapitaleAttuale(capitaleIniziale);
 
         capitaleRepository.save(capitale);
     }
@@ -66,5 +65,16 @@ public class CapitaleService {
 
         return capitaleRepository.save(capitale);
     }
+
+    public BigDecimal getCapitaleAttualeByUserId(UUID userId) {
+        Capitale capitale = getCapitaleByUserId(userId);
+        return capitale.getCapitaleAttuale();
+    }
+
+    public BigDecimal getCapitaleInizialeByUserId(UUID userId) {
+        Capitale capitale = getCapitaleByUserId(userId);
+        return capitale.getCapitaleIniziale();
+    }
+
 }
 
