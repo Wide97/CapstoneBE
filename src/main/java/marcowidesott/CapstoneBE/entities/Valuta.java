@@ -30,6 +30,7 @@ public class Valuta {
     @Column(nullable = false)
     private String simbolo; // Simbolo della valuta, es. "$", "€", ecc.
 
-    @OneToMany(mappedBy = "valuta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "valuta", fetch = FetchType.LAZY)
     private List<User> utenti;
 }
+

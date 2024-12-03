@@ -55,8 +55,8 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "valuta_id")
     private Valuta valuta;
-
 }
+
 
 
 

@@ -90,7 +90,7 @@ public class TradeService {
         if (TradeResult.PROFIT.equals(tradeDTO.result())) {
             profitLoss = profitLoss.subtract(totalCosts);
         } else {
-            profitLoss = profitLoss.add(totalCosts);
+            profitLoss = profitLoss.subtract(totalCosts);
         }
 
         trade.setProfitLoss(profitLoss);
@@ -135,7 +135,7 @@ public class TradeService {
         if (TradeResult.PROFIT.equals(tradeDTO.result())) {
             profitLoss = profitLoss.subtract(totalCosts);
         } else {
-            profitLoss = profitLoss.add(totalCosts);
+            profitLoss = profitLoss.subtract(totalCosts);
         }
 
         trade.setProfitLoss(profitLoss);
