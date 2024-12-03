@@ -68,6 +68,14 @@ public class TradeService {
             throw new InvalidDateFormatException("Formato ora di vendita non valido. Usa il formato: HH:mm");
         }
 
+        double openingCosts = tradeDTO.openingCosts();
+        double closingCosts = tradeDTO.closingCosts();
+        trade.setOpeningCosts(openingCosts);
+        trade.setClosingCosts(closingCosts);
+
+        BigDecimal profitLoss = tradeDTO.profitLoss();
+        BigDecimal totalCosts = BigDecimal.valueOf(openingCosts + closingCosts);
+
 
         trade.setPositionSize(tradeDTO.positionSize());
         trade.setLeverage(String.valueOf(tradeDTO.leverage()));
@@ -79,10 +87,12 @@ public class TradeService {
         trade.setProfitLoss(tradeDTO.profitLoss());
         trade.setAsset(tradeDTO.asset());
 
-        BigDecimal profitLoss = tradeDTO.profitLoss();
-        if (TradeResult.STOP_LOSS.equals(tradeDTO.result())) {
-            profitLoss = profitLoss.abs().negate();
+        if (TradeResult.PROFIT.equals(tradeDTO.result())) {
+            profitLoss = profitLoss.subtract(totalCosts);
+        } else {
+            profitLoss = profitLoss.add(totalCosts);
         }
+
         trade.setProfitLoss(profitLoss);
 
         trade.setAsset(tradeDTO.asset());
@@ -104,6 +114,11 @@ public class TradeService {
             throw new InvalidDateFormatException("Formato data di acquisto non valido");
         }
 
+        double openingCosts = tradeDTO.openingCosts();
+        double closingCosts = tradeDTO.closingCosts();
+        trade.setOpeningCosts(openingCosts);
+        trade.setClosingCosts(closingCosts);
+
         trade.setPositionSize(tradeDTO.positionSize());
         trade.setLeverage(String.valueOf(tradeDTO.leverage()));
         trade.setStrategy(tradeDTO.strategy());
@@ -114,7 +129,19 @@ public class TradeService {
         trade.setProfitLoss(tradeDTO.profitLoss());
         trade.setAsset(tradeDTO.asset());
 
+        BigDecimal profitLoss = tradeDTO.profitLoss();
+        BigDecimal totalCosts = BigDecimal.valueOf(openingCosts + closingCosts);
+
+        if (TradeResult.PROFIT.equals(tradeDTO.result())) {
+            profitLoss = profitLoss.subtract(totalCosts);
+        } else {
+            profitLoss = profitLoss.add(totalCosts);
+        }
+
+        trade.setProfitLoss(profitLoss);
+
         return tradeRepository.save(trade);
+
     }
 
     // Ottieni tutti i trade per un dato utente
