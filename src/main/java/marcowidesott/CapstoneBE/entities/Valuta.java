@@ -1,5 +1,6 @@
 package marcowidesott.CapstoneBE.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +32,8 @@ public class Valuta {
     private String simbolo; // Simbolo della valuta, es. "$", "€", ecc.
 
     @OneToMany(mappedBy = "valuta", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<User> utenti;
+
 }
 
