@@ -37,19 +37,20 @@ public class ReportMensileService {
         }
 
         LocalDate oggi = LocalDate.now();
-        Month mesePrecedente = oggi.minusMonths(1).getMonth();
-        int annoPrecedente = oggi.minusMonths(1).getYear();
+        LocalDate primoGiornoMesePrecedente = oggi.minusMonths(1).withDayOfMonth(1);
+        LocalDate ultimoGiornoMesePrecedente = primoGiornoMesePrecedente.withDayOfMonth(primoGiornoMesePrecedente.lengthOfMonth());
+        Month mesePrecedente = primoGiornoMesePrecedente.getMonth();
+        int annoPrecedente = primoGiornoMesePrecedente.getYear();
 
-        // Verifica se il report per il mese esiste già
         if (reportMensileRepository.findByUserIdAndMeseAndAnno(userId, mesePrecedente, annoPrecedente).isPresent()) {
             throw new RuntimeException("Report mensile già generato per il mese precedente");
         }
 
-        // Trova solo i trade non contabilizzati
-        List<Trade> trades = tradeRepository.findAllByUserIdAndSaleDateBetweenAndIsAccountedFalse(
+
+        List<Trade> trades = tradeRepository.findAllByUserIdAndSaleDateBetween(
                 userId,
-                oggi.withDayOfMonth(1).minusMonths(1),
-                oggi.withDayOfMonth(1).minusDays(1)
+                primoGiornoMesePrecedente,
+                ultimoGiornoMesePrecedente
         );
 
         BigDecimal profitto = BigDecimal.ZERO;
@@ -62,11 +63,15 @@ public class ReportMensileService {
             } else {
                 perdita = perdita.add(risultato.abs());
             }
-            trade.setAccounted(true);
         }
+
 
         BigDecimal capitaleFinale = capitale.getCapitaleAttuale().add(profitto).subtract(perdita);
 
+
+        capitale.setCapitaleAttuale(capitaleFinale);
+        capitaleRepository.save(capitale);
+        
         ReportMensile reportMensile = ReportMensile.builder()
                 .mese(mesePrecedente)
                 .anno(annoPrecedente)
@@ -77,7 +82,6 @@ public class ReportMensileService {
                 .build();
 
         reportMensileRepository.save(reportMensile);
-        tradeRepository.saveAll(trades);
     }
 
 

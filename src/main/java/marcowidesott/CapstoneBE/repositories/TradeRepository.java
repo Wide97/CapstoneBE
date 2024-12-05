@@ -17,7 +17,7 @@ public interface TradeRepository extends JpaRepository<Trade, UUID> {
 
     void deleteById(UUID id);
 
-    List<Trade> findAllByUserIdAndSaleDateBetweenAndIsAccountedFalse(UUID userId, LocalDate startDate, LocalDate endDate);
+    List<Trade> findAllByUserIdAndSaleDateBetween(UUID userId, LocalDate startDate, LocalDate endDate);
 
 
 }
