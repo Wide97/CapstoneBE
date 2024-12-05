@@ -1,5 +1,7 @@
 package marcowidesott.CapstoneBE.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +17,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Capitale {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -31,3 +33,4 @@ public class Capitale {
     @JoinColumn(name = "user_id")
     private User user;
 }
+

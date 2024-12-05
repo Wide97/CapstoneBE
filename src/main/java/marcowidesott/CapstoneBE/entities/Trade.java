@@ -50,10 +50,13 @@ public class Trade {
     @Enumerated(EnumType.STRING)
     private Asset asset;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean isAccounted = false;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
-    
+
 
 }

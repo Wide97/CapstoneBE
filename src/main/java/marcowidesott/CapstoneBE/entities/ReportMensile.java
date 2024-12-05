@@ -17,7 +17,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class ReportMensile {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -26,16 +25,22 @@ public class ReportMensile {
     @Column(nullable = false)
     private Month mese; // Mese del report
 
+    @Column(nullable = false, columnDefinition = "integer default 2023")
+    private int anno;
+    
     @Column(nullable = false)
-    private BigDecimal profitto;
+    private BigDecimal profitto; // Profitto totale
 
     @Column(nullable = false)
-    private BigDecimal perdita;
+    private BigDecimal perdita; // Perdita totale
 
     @Column(nullable = false)
-    private BigDecimal capitaleFinale;
+    private BigDecimal capitaleFinale; // Capitale al termine del mese
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }
+
+
+

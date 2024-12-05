@@ -57,5 +57,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleValutaNotFound(ValutaNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ReportAlreadyExistException.class)
+    public ResponseEntity<String> handleReportAlreadyExistException(ReportAlreadyExistException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CapitaleNotFoundException.class)
+    public ResponseEntity<String> handleCapiraleNotFoundException(CapitaleNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
 }
 

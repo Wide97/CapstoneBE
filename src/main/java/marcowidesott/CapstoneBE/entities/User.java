@@ -1,8 +1,6 @@
 package marcowidesott.CapstoneBE.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -44,7 +42,6 @@ public class User {
     private String profileImageUrl;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
     private List<Trade> trades;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -53,13 +50,12 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ReportMensile> reportMensili;
 
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "valuta_id")
-    @JsonBackReference
     private Valuta valuta;
-
-
 }
+
 
 
 
