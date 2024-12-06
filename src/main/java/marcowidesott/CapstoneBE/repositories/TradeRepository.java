@@ -19,5 +19,4 @@ public interface TradeRepository extends JpaRepository<Trade, UUID> {
 
     List<Trade> findAllByUserIdAndSaleDateBetween(UUID userId, LocalDate startDate, LocalDate endDate);
 
-
 }

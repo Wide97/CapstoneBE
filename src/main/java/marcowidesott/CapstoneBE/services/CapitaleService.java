@@ -3,6 +3,7 @@ package marcowidesott.CapstoneBE.services;
 import lombok.RequiredArgsConstructor;
 import marcowidesott.CapstoneBE.entities.Capitale;
 import marcowidesott.CapstoneBE.entities.Trade;
+import marcowidesott.CapstoneBE.entities.TradeResult;
 import marcowidesott.CapstoneBE.repositories.CapitaleRepository;
 import marcowidesott.CapstoneBE.repositories.TradeRepository;
 import marcowidesott.CapstoneBE.repositories.UserRepository;
@@ -51,20 +52,29 @@ public class CapitaleService {
     public Capitale ricalcolaCapitale(UUID userId) {
         Capitale capitale = getCapitaleByUserId(userId);
 
-        // Recuperiamo tutti i trade dell'utente
         List<Trade> trades = tradeRepository.findByUserId(userId);
 
-        // Sommiamo tutti i profitti/perdite dei trade
         BigDecimal totaleProfitLoss = trades.stream()
-                .map(Trade::getProfitLoss)
+                .map(trade -> {
+                    BigDecimal profitLoss = trade.getProfitLoss();
+                    BigDecimal costiTotali = BigDecimal.valueOf(trade.getOpeningCosts() + trade.getClosingCosts());
+
+                    if (trade.getResult() == TradeResult.BREAK_EVEN) {
+                        return costiTotali.negate();
+                    } else if (trade.getResult() == TradeResult.STOP_LOSS) {
+                        return profitLoss;
+                    } else {
+                        return profitLoss;
+                    }
+                })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Calcoliamo il nuovo capitale attuale
         BigDecimal nuovoCapitaleAttuale = capitale.getCapitaleIniziale().add(totaleProfitLoss);
         capitale.setCapitaleAttuale(nuovoCapitaleAttuale);
 
         return capitaleRepository.save(capitale);
     }
+
 
     public BigDecimal getCapitaleAttualeByUserId(UUID userId) {
         Capitale capitale = getCapitaleByUserId(userId);

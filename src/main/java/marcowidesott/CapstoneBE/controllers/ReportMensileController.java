@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import marcowidesott.CapstoneBE.entities.ReportMensile;
 import marcowidesott.CapstoneBE.payloads.ReportMensileDTO;
 import marcowidesott.CapstoneBE.services.ReportMensileService;
+import marcowidesott.CapstoneBE.services.TradeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReportMensileController {
     private final ReportMensileService reportMensileService;
+
+    private final TradeService tradeService;
+
 
     @PostMapping("/genera/{userId}")
     public ResponseEntity<Map<String, String>> generaReportMensile(@PathVariable UUID userId) {

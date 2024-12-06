@@ -1,5 +1,6 @@
 package marcowidesott.CapstoneBE.services;
 
+import jakarta.transaction.Transactional;
 import marcowidesott.CapstoneBE.entities.Capitale;
 import marcowidesott.CapstoneBE.entities.Trade;
 import marcowidesott.CapstoneBE.entities.TradeResult;
@@ -169,30 +170,36 @@ public class TradeService {
     }
 
 
+    @Transactional
     public void deleteTrade(UUID tradeId, UUID userId) {
-        // Trova il trade da eliminare
+
         Trade trade = tradeRepository.findById(tradeId)
                 .orElseThrow(() -> new TradeNotFoundException("Trade non trovato"));
 
-        // Verifica se l'utente ha il permesso di eliminare il trade
         if (!trade.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("Non hai il permesso per eliminare questo trade.");
         }
 
-        // Recupera il capitale dell'utente
+
         Capitale capitale = capitaleRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Capitale non trovato per l'utente con ID: " + userId));
 
-        // Sottrai il profitto/perdita del trade dal capitale attuale
-        BigDecimal nuovoCapitaleAttuale = capitale.getCapitaleAttuale().subtract(trade.getProfitLoss());
-        capitale.setCapitaleAttuale(nuovoCapitaleAttuale);
+        BigDecimal profitLoss = trade.getProfitLoss();
+        BigDecimal costiTotali = BigDecimal.valueOf(trade.getOpeningCosts() + trade.getClosingCosts());
 
-        // Salva il capitale aggiornato
+        if (trade.getResult() == TradeResult.BREAK_EVEN) {
+            capitale.setCapitaleAttuale(capitale.getCapitaleAttuale().add(costiTotali));
+        } else if (trade.getResult() == TradeResult.STOP_LOSS) {
+            capitale.setCapitaleAttuale(capitale.getCapitaleAttuale().subtract(profitLoss));
+        } else {
+            capitale.setCapitaleAttuale(capitale.getCapitaleAttuale().subtract(profitLoss));
+        }
+
         capitaleRepository.save(capitale);
 
-        // Elimina il trade
         tradeRepository.delete(trade);
     }
+
 
 }
 

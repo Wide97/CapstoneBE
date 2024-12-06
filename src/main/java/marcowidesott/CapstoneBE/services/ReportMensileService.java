@@ -45,8 +45,7 @@ public class ReportMensileService {
         if (reportMensileRepository.findByUserIdAndMeseAndAnno(userId, mesePrecedente, annoPrecedente).isPresent()) {
             throw new RuntimeException("Report mensile già generato per il mese precedente");
         }
-
-
+        
         List<Trade> trades = tradeRepository.findAllByUserIdAndSaleDateBetween(
                 userId,
                 primoGiornoMesePrecedente,
@@ -65,13 +64,8 @@ public class ReportMensileService {
             }
         }
 
+        BigDecimal capitaleFinale = capitale.getCapitaleAttuale();
 
-        BigDecimal capitaleFinale = capitale.getCapitaleAttuale().add(profitto).subtract(perdita);
-
-
-        capitale.setCapitaleAttuale(capitaleFinale);
-        capitaleRepository.save(capitale);
-        
         ReportMensile reportMensile = ReportMensile.builder()
                 .mese(mesePrecedente)
                 .anno(annoPrecedente)

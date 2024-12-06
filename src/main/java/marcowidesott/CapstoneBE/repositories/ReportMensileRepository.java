@@ -12,4 +12,5 @@ public interface ReportMensileRepository extends JpaRepository<ReportMensile, UU
     List<ReportMensile> findByUserId(UUID userId);
 
     Optional<ReportMensile> findByUserIdAndMeseAndAnno(UUID userId, Month mese, int anno);
+    
 }
