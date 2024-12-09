@@ -27,7 +27,7 @@ public class ReportMensile {
 
     @Column(nullable = false, columnDefinition = "integer default 2023")
     private int anno;
-    
+
     @Column(nullable = false)
     private BigDecimal profitto; // Profitto totale
 

@@ -5,7 +5,6 @@ import marcowidesott.CapstoneBE.entities.Capitale;
 import marcowidesott.CapstoneBE.entities.ReportMensile;
 import marcowidesott.CapstoneBE.entities.Trade;
 import marcowidesott.CapstoneBE.entities.User;
-import marcowidesott.CapstoneBE.repositories.CapitaleRepository;
 import marcowidesott.CapstoneBE.repositories.ReportMensileRepository;
 import marcowidesott.CapstoneBE.repositories.TradeRepository;
 import marcowidesott.CapstoneBE.repositories.UserRepository;
@@ -24,7 +23,6 @@ public class ReportMensileService {
     private final ReportMensileRepository reportMensileRepository;
     private final TradeRepository tradeRepository;
     private final UserRepository userRepository;
-    private final CapitaleRepository capitaleRepository;
 
     @Transactional
     public void generaReportMensile(UUID userId) {
@@ -42,29 +40,39 @@ public class ReportMensileService {
         Month mesePrecedente = primoGiornoMesePrecedente.getMonth();
         int annoPrecedente = primoGiornoMesePrecedente.getYear();
 
+
         if (reportMensileRepository.findByUserIdAndMeseAndAnno(userId, mesePrecedente, annoPrecedente).isPresent()) {
             throw new RuntimeException("Report mensile già generato per il mese precedente");
         }
-        
+
         List<Trade> trades = tradeRepository.findAllByUserIdAndSaleDateBetween(
                 userId,
                 primoGiornoMesePrecedente,
                 ultimoGiornoMesePrecedente
         );
 
+
         BigDecimal profitto = BigDecimal.ZERO;
         BigDecimal perdita = BigDecimal.ZERO;
 
         for (Trade trade : trades) {
             BigDecimal risultato = trade.getProfitLoss();
-            if (risultato.compareTo(BigDecimal.ZERO) > 0) {
+            System.out.println("Trade ID: " + trade.getId() + ", Profit/Loss: " + risultato);
+
+            if (risultato != null && risultato.compareTo(BigDecimal.ZERO) > 0) {
                 profitto = profitto.add(risultato);
-            } else {
+                System.out.println("Profitto aggiornato: " + profitto);
+            } else if (risultato != null) {
                 perdita = perdita.add(risultato.abs());
+                System.out.println("Perdita aggiornata: " + perdita);
+            } else {
+                System.out.println("Risultato nullo per il Trade ID: " + trade.getId());
             }
         }
 
+
         BigDecimal capitaleFinale = capitale.getCapitaleAttuale();
+
 
         ReportMensile reportMensile = ReportMensile.builder()
                 .mese(mesePrecedente)
@@ -76,6 +84,7 @@ public class ReportMensileService {
                 .build();
 
         reportMensileRepository.save(reportMensile);
+
     }
 
 
