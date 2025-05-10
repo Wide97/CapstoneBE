@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.UUID;
 
 @CrossOrigin(origins = {
-    "http://localhost:3000",                      // per sviluppo locale
-    "https://capstone-marco.vercel.app"           // per produzione su Vercel
+    "http://localhost:3000",
+    "https://trading-journal-beryl.vercel.app"
 })
 @RestController
 @RequestMapping("/api/auth")
