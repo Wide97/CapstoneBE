@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://tradingjournal-backend-pc2w.onrender.com")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

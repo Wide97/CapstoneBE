@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://tradingjournal-backend-pc2w.onrender.com")
 @RestController
 @RequestMapping("/api/trades")
 public class TradeController {
