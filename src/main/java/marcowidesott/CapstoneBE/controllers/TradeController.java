@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @CrossOrigin(origins = {
     "http://localhost:3000",
-    "https://capstone-marco.vercel.app"
+    "https://trading-journal-beryl.vercel.app"
 })
 @RestController
 @RequestMapping("/api/trades")
