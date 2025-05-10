@@ -30,13 +30,7 @@ public class ValutaService {
         return valutaRepository.findById(id)
                 .orElseThrow(() -> new ValutaNotFoundException("Valuta non trovata con ID: " + id));
     }
-
-    public Valuta getValutaByUserId(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Utente non trovato con ID: " + userId));
-        return user.getValuta();
-    }
-
+    
 
     public Valuta createValuta(Valuta valuta) {
         return valutaRepository.save(valuta);
