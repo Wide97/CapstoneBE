@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/capitale")
+@RequestMapping("/api/capitali")
 @RequiredArgsConstructor
 public class CapitaleController {
 
