@@ -24,7 +24,7 @@ public class Capitale {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private BigDecimal capitaleIniziale;
 
     @Column(nullable = false)
