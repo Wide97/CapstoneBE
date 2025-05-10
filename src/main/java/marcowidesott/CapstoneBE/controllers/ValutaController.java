@@ -24,6 +24,13 @@ public class ValutaController {
         return ResponseEntity.ok(valute);
     }
 
+    @GetMapping("/utente/{userId}")
+    public ResponseEntity<Valuta> getValutaUtente(@PathVariable UUID userId) {
+        Valuta valuta = valutaService.getValutaByUserId(userId);
+        return ResponseEntity.ok(valuta);
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<Valuta> getValutaById(@PathVariable UUID id) {
         Valuta valuta = valutaService.getValutaById(id);

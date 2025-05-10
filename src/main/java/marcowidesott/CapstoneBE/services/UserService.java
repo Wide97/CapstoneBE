@@ -1,10 +1,12 @@
 package marcowidesott.CapstoneBE.services;
 
+import marcowidesott.CapstoneBE.entities.Capitale;
 import marcowidesott.CapstoneBE.entities.User;
 import marcowidesott.CapstoneBE.exceptions.InvalidCredentialsException;
 import marcowidesott.CapstoneBE.exceptions.UserNotFoundException;
 import marcowidesott.CapstoneBE.payloads.UserDTO;
 import marcowidesott.CapstoneBE.payloads.UserUpdateDTO;
+import marcowidesott.CapstoneBE.repositories.CapitaleRepository;
 import marcowidesott.CapstoneBE.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,14 +30,27 @@ public class UserService {
     @Autowired
     private CloudinaryService cloudinaryService;
 
+    @Autowired
+    private CapitaleRepository capitaleRepository;
+
     public User registerUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new RuntimeException("Username già in uso.");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        
+        Capitale capitale = Capitale.builder()
+                .user(savedUser)
+                .capitaleIniziale(BigDecimal.ZERO)
+                .capitaleAttuale(BigDecimal.ZERO)
+                .build();
+
+        capitaleRepository.save(capitale);
+        return savedUser;
     }
+
 
     public User authenticateUser(String username, String password) {
         Optional<User> userOpt = userRepository.findByUsername(username);
