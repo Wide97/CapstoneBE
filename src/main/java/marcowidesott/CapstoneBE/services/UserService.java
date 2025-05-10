@@ -2,12 +2,14 @@ package marcowidesott.CapstoneBE.services;
 
 import marcowidesott.CapstoneBE.entities.Capitale;
 import marcowidesott.CapstoneBE.entities.User;
+import marcowidesott.CapstoneBE.entities.Valuta;
 import marcowidesott.CapstoneBE.exceptions.InvalidCredentialsException;
 import marcowidesott.CapstoneBE.exceptions.UserNotFoundException;
 import marcowidesott.CapstoneBE.payloads.UserDTO;
 import marcowidesott.CapstoneBE.payloads.UserUpdateDTO;
 import marcowidesott.CapstoneBE.repositories.CapitaleRepository;
 import marcowidesott.CapstoneBE.repositories.UserRepository;
+import marcowidesott.CapstoneBE.repositories.ValutaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,12 +35,21 @@ public class UserService {
     @Autowired
     private CapitaleRepository capitaleRepository;
 
+    @Autowired
+    private ValutaRepository valutaRepository;
+
     public User registerUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new RuntimeException("Username già in uso.");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        Valuta defaultValuta = valutaRepository.findByCodice("EUR")
+                .orElseThrow(() -> new RuntimeException("Valuta EUR non trovata nel DB"));
+
+        user.setValuta(defaultValuta);
+
         User savedUser = userRepository.save(user);
         
         Capitale capitale = Capitale.builder()
@@ -48,6 +59,7 @@ public class UserService {
                 .build();
 
         capitaleRepository.save(capitale);
+
         return savedUser;
     }
 
