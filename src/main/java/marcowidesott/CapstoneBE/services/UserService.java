@@ -99,18 +99,15 @@ public class UserService {
     }
 
 
-    public void uploadProfileImage(UUID id, MultipartFile file) throws IOException {
+public User uploadProfileImage(UUID id, MultipartFile file) throws IOException {
+    User user = userRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException("Utente non trovato con ID: " + id));
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("Utente non trovato con ID: " + id));
+    String imageUrl = cloudinaryService.uploadFile(file);
+    user.setProfileImageUrl(imageUrl);
 
-
-        String imageUrl = cloudinaryService.uploadFile(file);
-
-
-        user.setProfileImageUrl(imageUrl);
-        userRepository.save(user);
-    }
+    return userRepository.save(user); 
+}
 
 
     public User getUserById(UUID userId) {
