@@ -26,18 +26,28 @@ public class CloudinaryService {
         ));
     }
 
-    public String uploadFile(MultipartFile file) throws IOException {
-        // Verifica che il file non sia nullo
-        if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("File non valido");
+  public String uploadFile(MultipartFile file) throws IOException {
+    if (file == null || file.isEmpty()) {
+        throw new IllegalArgumentException("File non valido");
+    }
+
+    try {
+        Map<String, Object> uploadResult = cloudinary.uploader().upload(
+                file.getBytes(),
+                ObjectUtils.asMap("resource_type", "auto")
+        );
+
+        Object secureUrl = uploadResult.get("secure_url");
+
+        if (secureUrl == null) {
+            throw new IOException("URL sicuro non restituito da Cloudinary");
         }
 
-        // Carica il file su Cloudinary e ottieni la risposta
-        Map<String, String> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("resource_type", "auto"));
-
-        // Restituisce l'URL sicuro dell'immagine
-        return uploadResult.get("secure_url");
+        return secureUrl.toString();
+    } catch (Exception e) {
+        throw new IOException("Errore durante l'upload su Cloudinary: " + e.getMessage(), e);
     }
+}
 
 
     public String uploadFileWithTransformation(MultipartFile file) throws IOException {
