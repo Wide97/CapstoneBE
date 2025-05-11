@@ -106,17 +106,18 @@ public class AuthController {
     }
 
 
-    @PostMapping("/{id}/uploadImage")
-    public ResponseEntity<String> uploadProfileImage(@PathVariable UUID id, @RequestParam("file") MultipartFile file) {
-        try {
-
-            userService.uploadProfileImage(id, file);
-            return ResponseEntity.ok("Immagine caricata con successo.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Errore nel caricamento dell'immagine: " + e.getMessage());
-        }
+@PostMapping("/{id}/uploadImage")
+public ResponseEntity<User> uploadProfileImage(@PathVariable UUID id,
+                                               @RequestParam("file") MultipartFile file) {
+    try {
+        User updatedUser = userService.uploadProfileImage(id, file);
+        return ResponseEntity.ok(updatedUser); // 🔁 restituisci l'utente aggiornato
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .build();
     }
+}
 
 
     @GetMapping("/profile")
