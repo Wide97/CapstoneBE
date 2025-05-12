@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.UUID;
 
 @CrossOrigin(origins = {
-    "http://localhost:3000",
-    "https://trading-journal-beryl.vercel.app"
+        "http://localhost:3000",
+        "https://trading-journal-beryl.vercel.app"
 })
 @RestController
 @RequestMapping("/api/auth")
@@ -106,18 +106,18 @@ public class AuthController {
     }
 
 
-@PostMapping("/{id}/uploadImage")
-public ResponseEntity<User> uploadProfileImage(@PathVariable UUID id,
-                                               @RequestParam("file") MultipartFile file) {
-    try {
-        User updatedUser = userService.uploadProfileImage(id, file);
-        return ResponseEntity.ok(updatedUser); // 🔁 restituisci l'utente aggiornato
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .build();
+    @PostMapping("/{id}/uploadImage")
+    public ResponseEntity<?> uploadProfileImage(@PathVariable UUID id,
+                                                @RequestParam("file") MultipartFile file) {
+        try {
+            User updatedUser = userService.uploadProfileImage(id, file);
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e) {
+            e.printStackTrace(); // log su console Render
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Errore durante l'upload: " + e.getMessage());
+        }
     }
-}
 
 
     @GetMapping("/profile")
